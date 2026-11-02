@@ -112,10 +112,19 @@ async function connectRobot() {
     setStatus("Connecting…", "connecting");
     setError("");
 
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ name: DEVICE_NAME, services: [SERVICE_UUID] }],
-      optionalServices: [SERVICE_UUID],
-    });
+    let device;
+    try {
+      device = await navigator.bluetooth.requestDevice({
+        filters: [{ name: DEVICE_NAME }],
+        optionalServices: [SERVICE_UUID],
+      });
+    } catch (exactError) {
+      console.warn("Exact-name filter failed; falling back to all devices.", exactError);
+      device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+        optionalServices: [SERVICE_UUID],
+      });
+    }
 
     device.addEventListener("gattserverdisconnected", async () => {
       stopDirectionLoop();
@@ -126,17 +135,22 @@ async function connectRobot() {
       setStatus("Disconnected", "disconnected");
       setError("BLE connection was lost.");
       buttonEnabled(true);
-      if (device.gatt && device.gatt.connected) {
-        try {
-          await writeCommand("S");
-        } catch (error) {
-          console.warn("Stop on disconnect failed", error);
-        }
-      }
     });
 
     const server = await device.gatt.connect();
-    const service = await server.getPrimaryService(SERVICE_UUID);
+
+    let service;
+    try {
+      service = await server.getPrimaryService(SERVICE_UUID);
+    } catch (serviceError) {
+      console.warn("Service lookup failed; trying alternate service discovery.", serviceError);
+      const services = await server.getPrimaryServices();
+      service = services.find((candidate) => candidate.uuid.toLowerCase() === SERVICE_UUID);
+      if (!service) {
+        throw new Error("The ESP32 service was not found. Check the BLE service UUID and the device is advertising it.");
+      }
+    }
+
     const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
 
     if (!characteristic.properties.write && !characteristic.properties.writeWithoutResponse) {
@@ -160,7 +174,7 @@ async function connectRobot() {
     state.server = null;
     state.characteristic = null;
     setStatus("Disconnected", "disconnected");
-    setError(error.message || "Could not connect to the robot.");
+    setError(error.message || "Could not connect to the robot. Make sure the ESP32 is advertising as Morris Nano ESP 32 and is powered on.");
     buttonEnabled(true);
   }
 }
