@@ -1,0 +1,19 @@
+{
+  "name": "Morris Nano Robot Controller",
+  "short_name": "Robot Control",
+  "description": "Installable controller for the Morris Nano ESP 32 BLE robot",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07111d",
+  "theme_color": "#101826",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

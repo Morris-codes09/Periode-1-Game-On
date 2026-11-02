@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#101826" />
+    <meta name="description" content="BLE robot controller PWA for the Morris Nano ESP 32" />
+    <title>Morris Nano Robot Controller</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">BLE Controller</p>
+          <h1>Morris Nano ESP 32</h1>
+        </div>
+        <div class="status-pill" aria-live="polite">
+          <span id="statusDot" class="status-dot disconnected"></span>
+          <span id="statusText">Disconnected</span>
+        </div>
+      </header>
+
+      <section class="panel actions-panel">
+        <div class="button-row">
+          <button id="connectBtn" class="primary" type="button">Connect</button>
+          <button id="disconnectBtn" class="secondary" type="button">Disconnect</button>
+        </div>
+
+        <div id="errorBox" class="error-box" hidden aria-live="assertive"></div>
+      </section>
+
+      <section class="panel speed-panel">
+        <div class="speed-header">
+          <label for="speedSlider">Speed</label>
+          <strong id="speedValue">5</strong>
+        </div>
+        <input id="speedSlider" type="range" min="0" max="9" step="1" value="5" />
+        <div class="speed-scale" aria-hidden="true">
+          <span>0</span>
+          <span>9</span>
+        </div>
+      </section>
+
+      <section class="panel pad-panel">
+        <div class="dpad" aria-label="Directional controls">
+          <button class="move-btn" data-direction="L" type="button" aria-label="Turn left">◀</button>
+          <div class="dpad-stack">
+            <button class="move-btn" data-direction="F" type="button" aria-label="Move forward">▲</button>
+            <button id="stopBtn" class="stop-btn" type="button">STOP</button>
+            <button class="move-btn" data-direction="B" type="button" aria-label="Move backward">▼</button>
+          </div>
+          <button class="move-btn" data-direction="R" type="button" aria-label="Turn right">▶</button>
+        </div>
+      </section>
+
+      <button id="installBtn" class="install-btn" type="button" hidden>Install app</button>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
